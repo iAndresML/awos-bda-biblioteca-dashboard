@@ -1,7 +1,14 @@
-async function getData() {
+type BookReport = {
+  title: string;
+  total: number;
+  rank: number;
+};
+
+async function getData(): Promise<BookReport[]> {
   const res = await fetch("http://localhost:3000/api/books", {
     cache: "no-store",
   });
+
   return res.json();
 }
 
@@ -22,7 +29,7 @@ export default async function Home() {
         </thead>
 
         <tbody>
-          {data.map((r: any, i: number) => (
+          {data.map((r: BookReport, i: number) => (
             <tr key={i}>
               <td>{r.title}</td>
               <td>{r.total}</td>
