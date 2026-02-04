@@ -19,7 +19,7 @@ export default async function Home() {
     <div>
       <h1>Libros más prestados</h1>
 
-      <table border={1}>
+      <table border={1} cellPadding={8}>
         <thead>
           <tr>
             <th>Título</th>
