@@ -1,30 +1,40 @@
-async function getData(){
- const r=await fetch("http://localhost:3000/api/inventory",{cache:"no-store"});
- return r.json();
+type Inventory = {
+  title: string;
+  total: number;
+  available: number;
+};
+
+async function getData(): Promise<Inventory[]> {
+  const r = await fetch("http://localhost:3000/api/inventory", { cache: "no-store" });
+  return r.json();
 }
 
-export default async function Page(){
- const data=await getData();
+export default async function Page() {
+  const data = await getData();
 
- return(
-  <div>
-   <h1>Inventario</h1>
+  return (
+    <div>
+      <h1>Inventario</h1>
 
-   <table border={1} cellPadding={8}>
-    <tr>
-     <th>Título</th>
-     <th>Total</th>
-     <th>Disponibles</th>
-    </tr>
+      <table border={1} cellPadding={8}>
+        <thead>
+          <tr>
+            <th>Título</th>
+            <th>Total</th>
+            <th>Disponibles</th>
+          </tr>
+        </thead>
 
-    {data.map((r:any,i:number)=>(
-     <tr key={i}>
-      <td>{r.title}</td>
-      <td>{r.total}</td>
-      <td>{r.available}</td>
-     </tr>
-    ))}
-   </table>
-  </div>
- );
+        <tbody>
+          {data.map((r: Inventory, i: number) => (
+            <tr key={i}>
+              <td>{r.title}</td>
+              <td>{r.total}</td>
+              <td>{r.available}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
 }

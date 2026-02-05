@@ -1,30 +1,40 @@
-async function getData(){
- const r=await fetch("http://localhost:3000/api/overdue",{cache:"no-store"});
- return r.json();
+type Overdue = {
+  name: string;
+  title: string;
+  status: string;
+};
+
+async function getData(): Promise<Overdue[]> {
+  const r = await fetch("http://localhost:3000/api/overdue", { cache: "no-store" });
+  return r.json();
 }
 
-export default async function Page(){
- const data=await getData();
+export default async function Page() {
+  const data = await getData();
 
- return(
-  <div>
-   <h1>Préstamos vencidos</h1>
+  return (
+    <div>
+      <h1>Préstamos vencidos</h1>
 
-   <table border={1} cellPadding={8}>
-    <tr>
-     <th>Usuario</th>
-     <th>Libro</th>
-     <th>Status</th>
-    </tr>
+      <table border={1} cellPadding={8}>
+        <thead>
+          <tr>
+            <th>Usuario</th>
+            <th>Libro</th>
+            <th>Status</th>
+          </tr>
+        </thead>
 
-    {data.map((r:any,i:number)=>(
-     <tr key={i}>
-      <td>{r.name}</td>
-      <td>{r.title}</td>
-      <td>{r.status}</td>
-     </tr>
-    ))}
-   </table>
-  </div>
- );
+        <tbody>
+          {data.map((r: Overdue, i: number) => (
+            <tr key={i}>
+              <td>{r.name}</td>
+              <td>{r.title}</td>
+              <td>{r.status}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
 }

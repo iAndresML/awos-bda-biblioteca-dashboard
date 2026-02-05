@@ -1,28 +1,37 @@
-async function getData(){
- const r=await fetch("http://localhost:3000/api/fines",{cache:"no-store"});
- return r.json();
+type Fine = {
+  name: string;
+  total: number;
+};
+
+async function getData(): Promise<Fine[]> {
+  const r = await fetch("http://localhost:3000/api/fines", { cache: "no-store" });
+  return r.json();
 }
 
-export default async function Page(){
- const data=await getData();
+export default async function Page() {
+  const data = await getData();
 
- return(
-  <div>
-   <h1>Resumen de multas</h1>
+  return (
+    <div>
+      <h1>Resumen de multas</h1>
 
-   <table border={1} cellPadding={8}>
-    <tr>
-     <th>Usuario</th>
-     <th>Total</th>
-    </tr>
+      <table border={1} cellPadding={8}>
+        <thead>
+          <tr>
+            <th>Usuario</th>
+            <th>Total</th>
+          </tr>
+        </thead>
 
-    {data.map((r:any,i:number)=>(
-     <tr key={i}>
-      <td>{r.name}</td>
-      <td>{r.total}</td>
-     </tr>
-    ))}
-   </table>
-  </div>
- );
+        <tbody>
+          {data.map((r: Fine, i: number) => (
+            <tr key={i}>
+              <td>{r.name}</td>
+              <td>{r.total}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
 }
