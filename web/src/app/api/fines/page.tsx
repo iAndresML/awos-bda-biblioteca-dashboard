@@ -11,7 +11,11 @@ export default async function Page(){
    <h1>Resumen de multas</h1>
 
    <table border={1} cellPadding={8}>
-    <tr><th>Usuario</th><th>Total</th></tr>
+    <tr>
+     <th>Usuario</th>
+     <th>Total</th>
+    </tr>
+
     {data.map((r:any,i:number)=>(
      <tr key={i}>
       <td>{r.name}</td>

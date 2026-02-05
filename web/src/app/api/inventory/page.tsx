@@ -11,7 +11,12 @@ export default async function Page(){
    <h1>Inventario</h1>
 
    <table border={1} cellPadding={8}>
-    <tr><th>Título</th><th>Total</th><th>Disponibles</th></tr>
+    <tr>
+     <th>Título</th>
+     <th>Total</th>
+     <th>Disponibles</th>
+    </tr>
+
     {data.map((r:any,i:number)=>(
      <tr key={i}>
       <td>{r.title}</td>

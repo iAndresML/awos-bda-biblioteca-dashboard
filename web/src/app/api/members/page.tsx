@@ -11,7 +11,12 @@ export default async function Page(){
    <h1>Actividad de usuarios</h1>
 
    <table border={1} cellPadding={8}>
-    <tr><th>Nombre</th><th>Préstamos</th><th>Status</th></tr>
+    <tr>
+     <th>Nombre</th>
+     <th>Préstamos</th>
+     <th>Status</th>
+    </tr>
+
     {data.map((r:any,i:number)=>(
      <tr key={i}>
       <td>{r.name}</td>
