@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export default function RootLayout({
   children,
 }: {
@@ -10,17 +12,29 @@ export default function RootLayout({
           <h2>Dashboard Biblioteca</h2>
 
           <nav style={{ marginTop: 10 }}>
-            <a href="/" style={{ color: "white", marginRight: 10 }}>Libros</a>
-            <a href="/overdue" style={{ color: "white", marginRight: 10 }}>Vencidos</a>
-            <a href="/fines" style={{ color: "white", marginRight: 10 }}>Multas</a>
-            <a href="/members" style={{ color: "white", marginRight: 10 }}>Usuarios</a>
-            <a href="/inventory" style={{ color: "white" }}>Inventario</a>
+            <Link href="/" style={{ color: "white", marginRight: 10 }}>
+              Libros
+            </Link>
+
+            <Link href="/overdue" style={{ color: "white", marginRight: 10 }}>
+              Vencidos
+            </Link>
+
+            <Link href="/fines" style={{ color: "white", marginRight: 10 }}>
+              Multas
+            </Link>
+
+            <Link href="/members" style={{ color: "white", marginRight: 10 }}>
+              Usuarios
+            </Link>
+
+            <Link href="/inventory" style={{ color: "white" }}>
+              Inventario
+            </Link>
           </nav>
         </header>
 
-        <main style={{ padding: 20 }}>
-          {children}
-        </main>
+        <main style={{ padding: 20 }}>{children}</main>
       </body>
     </html>
   );
