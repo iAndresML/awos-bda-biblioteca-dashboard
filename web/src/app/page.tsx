@@ -1,97 +1,82 @@
-"use client";
-
-import { useEffect, useState } from "react";
-
-type Book = {
-  title: string;
-  author: string;
-  total_loans: number;
-  ranking: number;
-};
+import Link from "next/link";
 
 export default function Page() {
-
-  const [books, setBooks] = useState<Book[]>([]);
-
-  const [search, setSearch] = useState("");
-
-  const [page, setPage] = useState(1);
-
-  async function loadBooks() {
-
-    const res = await fetch(
-      `/api/books?search=${search}&page=${page}&limit=10`
-    );
-
-    const data = await res.json();
-
-    setBooks(data);
-
-  }
-
-  useEffect(() => {
-    loadBooks();
-  }, []);
 
   return (
 
     <div>
 
-      <h1>Libros más prestados</h1>
+      <h1>Dashboard de Biblioteca</h1>
 
-      <input
-        placeholder="Buscar por título o autor"
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-      />
+      <p>
+        Este dashboard permite analizar préstamos, multas,
+        actividad de usuarios e inventario.
+      </p>
 
-      <button onClick={() => loadBooks()}>
-        Buscar
-      </button>
-
-      <table border={1}>
-
-        <thead>
-          <tr>
-            <th>Título</th>
-            <th>Autor</th>
-            <th>Total préstamos</th>
-            <th>Ranking</th>
-          </tr>
-        </thead>
-
-        <tbody>
-
-          {books.map((b, i) => (
-
-            <tr key={i}>
-              <td>{b.title}</td>
-              <td>{b.author}</td>
-              <td>{b.total_loans}</td>
-              <td>{b.ranking}</td>
-            </tr>
-
-          ))}
-
-        </tbody>
-
-      </table>
-
-      <button onClick={() => {
-        setPage(page - 1);
-        loadBooks();
+      <div style={{
+        display: "grid",
+        gridTemplateColumns: "repeat(3, 1fr)",
+        gap: 20,
+        marginTop: 20
       }}>
-        Anterior
-      </button>
 
-      <button onClick={() => {
-        setPage(page + 1);
-        loadBooks();
-      }}>
-        Siguiente
-      </button>
+        <Card
+          title="Libros más prestados"
+          link="/reports/most-borrowed"
+        />
+
+        <Card
+          title="Préstamos vencidos"
+          link="/reports/overdue"
+        />
+
+        <Card
+          title="Resumen de multas"
+          link="/reports/fines"
+        />
+
+        <Card
+          title="Actividad de usuarios"
+          link="/reports/members"
+        />
+
+        <Card
+          title="Estado del inventario"
+          link="/reports/inventory"
+        />
+
+      </div>
 
     </div>
+
+  );
+
+}
+
+function Card({
+  title,
+  link
+}: {
+  title: string;
+  link: string;
+}) {
+
+  return (
+
+    <Link href={link}>
+
+      <div style={{
+        border: "1px solid gray",
+        padding: 20,
+        borderRadius: 10,
+        cursor: "pointer"
+      }}>
+
+        <h3>{title}</h3>
+
+      </div>
+
+    </Link>
 
   );
 
