@@ -1,58 +1,101 @@
-import { Pool } from "pg";
-export const dynamic = "force-dynamic";
+"use client";
 
-type BookRow = {
+import { useEffect, useState } from "react";
+
+interface Book {
   title: string;
   author: string;
-  borrow_count: number;
-  rank: number;
-};
+  total_loans: number;
+  ranking: number;
+}
 
-const pool = new Pool({
-  host: "db",
-  port: 5432,
-  user: "appuser",
-  password: "apppass",
-  database: "biblioteca",
-});
+export default function MostBorrowedPage() {
 
-export default async function MostBorrowedPage() {
+  const [data, setData] = useState<Book[]>([]);
+  const [search, setSearch] = useState("");
+  const [page, setPage] = useState(1);
 
-  const result = await pool.query<BookRow>(`
-    SELECT title, author, borrow_count, rank
-    FROM vw_most_borrowed_books
-    ORDER BY rank
-    LIMIT 20
-  `);
+  const limit = 10;
 
-  const data = result.rows;
+  async function loadData() {
+
+    const res = await fetch(
+      `/api/reports/most-borrowed?search=${encodeURIComponent(search)}&page=${page}&limit=${limit}`
+    );
+
+    const json = await res.json();
+
+    setData(json);
+  }
+
+  useEffect(() => {
+    loadData();
+  }, [page]);
 
   return (
     <div style={{ padding: 20 }}>
+
       <h1>Libros más prestados</h1>
 
-      <table border={1} cellPadding={10}>
+      <input
+        placeholder="Buscar por título o autor"
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+      />
+
+      <button onClick={() => { setPage(1); loadData(); }}>
+        Buscar
+      </button>
+
+      <table border={1} cellPadding={5} style={{ marginTop: 20 }}>
+
         <thead>
           <tr>
             <th>Ranking</th>
             <th>Título</th>
             <th>Autor</th>
-            <th>Préstamos</th>
+            <th>Total préstamos</th>
           </tr>
         </thead>
 
         <tbody>
-          {data.map((row, i) => (
-            <tr key={i}>
-              <td>{row.rank}</td>
+
+          {data.map((row, index) => (
+
+            <tr key={index}>
+              <td>{row.ranking}</td>
               <td>{row.title}</td>
               <td>{row.author}</td>
-              <td>{row.borrow_count}</td>
+              <td>{row.total_loans}</td>
             </tr>
+
           ))}
+
         </tbody>
 
       </table>
+
+      <div style={{ marginTop: 20 }}>
+
+        <button
+          onClick={() => setPage(page - 1)}
+          disabled={page === 1}
+        >
+          Anterior
+        </button>
+
+        <span style={{ margin: 10 }}>
+          Página {page}
+        </span>
+
+        <button
+          onClick={() => setPage(page + 1)}
+        >
+          Siguiente
+        </button>
+
+      </div>
+
     </div>
   );
 }

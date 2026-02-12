@@ -1,62 +1,61 @@
-import { Pool } from "pg";
-export const dynamic = "force-dynamic";
+"use client";
 
-type FineRow = {
+import { useEffect, useState } from "react";
+
+interface Fine {
   member_name: string;
   total_fines: number;
-  paid_fines: number;
-  pending_fines: number;
-};
+  total_amount: number;
+}
 
-const pool = new Pool({
-  host: "db",
-  port: 5432,
-  user: "appuser",
-  password: "apppass",
-  database: "biblioteca",
-});
+export default function FinesPage() {
 
-export default async function FinesPage() {
+  const [data, setData] = useState<Fine[]>([]);
 
-  const result = await pool.query<FineRow>(`
-    SELECT
-      member_name,
-      total_fines,
-      paid_fines,
-      pending_fines
-    FROM vw_fines_summary
-    ORDER BY total_fines DESC
-    LIMIT 20
-  `);
+  async function loadData() {
 
-  const data = result.rows;
+    const res = await fetch("/api/reports/fines");
+
+    const json = await res.json();
+
+    setData(json);
+  }
+
+  useEffect(() => {
+    loadData();
+  }, []);
 
   return (
     <div style={{ padding: 20 }}>
+
       <h1>Resumen de multas</h1>
 
-      <table border={1} cellPadding={10}>
+      <table border={1} cellPadding={5}>
+
         <thead>
           <tr>
             <th>Usuario</th>
-            <th>Total</th>
-            <th>Pagadas</th>
-            <th>Pendientes</th>
+            <th>Total multas</th>
+            <th>Monto total</th>
           </tr>
         </thead>
 
         <tbody>
-          {data.map((row, i) => (
-            <tr key={i}>
+
+          {data.map((row, index) => (
+
+            <tr key={index}>
               <td>{row.member_name}</td>
-              <td>${row.total_fines}</td>
-              <td>${row.paid_fines}</td>
-              <td>${row.pending_fines}</td>
+              <td>{row.total_fines}</td>
+              <td>${row.total_amount}</td>
             </tr>
+
           ))}
+
         </tbody>
 
       </table>
+
     </div>
   );
 }
