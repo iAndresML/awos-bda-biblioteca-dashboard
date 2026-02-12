@@ -1,40 +1,33 @@
-type Overdue = {
-  name: string;
-  title: string;
-  status: string;
-};
+import { pool } from "@/lib/db";
+import { NextResponse } from "next/server";
 
-async function getData(): Promise<Overdue[]> {
-  const r = await fetch("http://localhost:3000/api/overdue", { cache: "no-store" });
-  return r.json();
-}
+export async function GET(req: Request) {
 
-export default async function Page() {
-  const data = await getData();
+  const { searchParams } = new URL(req.url);
 
-  return (
-    <div>
-      <h1>Préstamos vencidos</h1>
+  const min_days = Number(searchParams.get("min_days") || "0");
+  const page = Number(searchParams.get("page") || "1");
+  const limit = Number(searchParams.get("limit") || "10");
 
-      <table border={1} cellPadding={8}>
-        <thead>
-          <tr>
-            <th>Usuario</th>
-            <th>Libro</th>
-            <th>Status</th>
-          </tr>
-        </thead>
+  const offset = (page - 1) * limit;
 
-        <tbody>
-          {data.map((r, i) => (
-            <tr key={i}>
-              <td>{r.name}</td>
-              <td>{r.title}</td>
-              <td>{r.status}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-  );
+  const query = `
+    SELECT
+      member_name,
+      book_title,
+      due_at,
+      days_overdue,
+      fine_suggested
+    FROM vw_overdue_loans
+    WHERE days_overdue >= $1
+    ORDER BY days_overdue DESC
+    LIMIT $2 OFFSET $3
+  `;
+
+  const values = [min_days, limit, offset];
+
+  const result = await pool.query(query, values);
+
+  return NextResponse.json(result.rows);
+
 }
