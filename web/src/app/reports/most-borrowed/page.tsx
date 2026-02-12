@@ -1,73 +1,33 @@
-async function getData() {
+import { pool } from "@/lib/db";
+import { NextResponse } from "next/server";
 
-  const res = await fetch(
-    "http://localhost:3000/api/books",
-    {
-      cache: "no-store"
-    }
-  );
+export async function GET(req: Request) {
 
-  return res.json();
+  const { searchParams } = new URL(req.url);
 
-}
+  const search = searchParams.get("search") || "";
+  const page = Number(searchParams.get("page") || "1");
+  const limit = Number(searchParams.get("limit") || "10");
 
-export default async function Page() {
+  const offset = (page - 1) * limit;
 
-  const data = await getData();
+  const query = `
+    SELECT
+      title,
+      author,
+      total_loans,
+      rank_position
+    FROM vw_most_borrowed_books
+    WHERE title ILIKE $1
+       OR author ILIKE $1
+    ORDER BY rank_position
+    LIMIT $2 OFFSET $3
+  `;
 
-  const total = data.reduce(
-    (sum: number, b: any) => sum + b.total_loans,
-    0
-  );
+  const values = [`%${search}%`, limit, offset];
 
-  return (
+  const result = await pool.query(query, values);
 
-    <div>
-
-      <h1>Libros más prestados</h1>
-
-      <p>
-        Este reporte muestra los libros con mayor demanda.
-      </p>
-
-      <h2>
-        KPI Total préstamos: {total}
-      </h2>
-
-      <table border={1}>
-
-        <thead>
-
-          <tr>
-            <th>Título</th>
-            <th>Autor</th>
-            <th>Total</th>
-            <th>Ranking</th>
-          </tr>
-
-        </thead>
-
-        <tbody>
-
-          {data.map((b: any) => (
-
-            <tr key={b.id}>
-
-              <td>{b.title}</td>
-              <td>{b.author}</td>
-              <td>{b.total_loans}</td>
-              <td>{b.ranking}</td>
-
-            </tr>
-
-          ))}
-
-        </tbody>
-
-      </table>
-
-    </div>
-
-  );
+  return NextResponse.json(result.rows);
 
 }
