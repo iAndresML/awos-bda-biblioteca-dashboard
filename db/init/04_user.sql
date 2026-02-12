@@ -1,4 +1,0 @@
-CREATE USER appuser WITH PASSWORD 'apppass';
-GRANT CONNECT ON DATABASE biblioteca TO appuser;
-GRANT USAGE ON SCHEMA public TO appuser;
-GRANT SELECT ON ALL TABLES IN SCHEMA public TO appuser;
