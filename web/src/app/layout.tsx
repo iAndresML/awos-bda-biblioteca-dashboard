@@ -1,64 +1,41 @@
-import "./globals.css";
 import Link from "next/link";
+import "./globals.css";
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({children}:{children:React.ReactNode}){
 
-  return (
+return(
 
-    <html>
+<html>
 
-      <body>
+<body>
 
-        <header style={{
-          background: "#0f172a",
-          color: "white",
-          padding: "15px"
-        }}>
+<div style={{
+background:"#0b3d91",
+padding:20,
+color:"white"
+}}>
 
-          <h2>Biblioteca Dashboard</h2>
+<h2>Biblioteca Virtual</h2>
 
-          <nav>
+<nav>
 
-            <Link href="/" style={{ marginRight: 15 }}>
-              Dashboard
-            </Link>
+<Link href="/">Dashboard</Link> |
 
-            <Link href="/reports/most-borrowed" style={{ marginRight: 15 }}>
-              Libros
-            </Link>
+<Link href="/reports/most-borrowed"> Libros</Link> |
 
-            <Link href="/reports/overdue" style={{ marginRight: 15 }}>
-              Morosidad
-            </Link>
+<Link href="/reports/overdue"> Vencidos</Link>
 
-            <Link href="/reports/fines" style={{ marginRight: 15 }}>
-              Multas
-            </Link>
+</nav>
 
-            <Link href="/reports/members" style={{ marginRight: 15 }}>
-              Usuarios
-            </Link>
+</div>
 
-            <Link href="/reports/inventory">
-              Inventario
-            </Link>
+<div style={{padding:20}}>
+{children}
+</div>
 
-          </nav>
+</body>
 
-        </header>
+</html>
 
-        <main style={{ padding: 20 }}>
-          {children}
-        </main>
-
-      </body>
-
-    </html>
-
-  );
-
+)
 }

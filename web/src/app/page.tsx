@@ -1,47 +1,34 @@
 import Link from "next/link";
 
-export default function Home() {
+export default function Page(){
 
-  return (
+return(
 
-    <div>
+<div>
 
-      <h1>Dashboard Biblioteca</h1>
+<h1>Dashboard Biblioteca</h1>
 
-      <ul>
+<div style={{
+display:"grid",
+gridTemplateColumns:"repeat(3,1fr)",
+gap:20
+}}>
 
-        <li>
-          <Link href="/reports/most-borrowed">
-            Libros más prestados
-          </Link>
-        </li>
+<Link href="/reports/most-borrowed">
+<div style={{border:"1px solid gray",padding:20}}>
+Libros más prestados
+</div>
+</Link>
 
-        <li>
-          <Link href="/reports/overdue">
-            Préstamos vencidos
-          </Link>
-        </li>
+<Link href="/reports/overdue">
+<div style={{border:"1px solid gray",padding:20}}>
+Préstamos vencidos
+</div>
+</Link>
 
-        <li>
-          <Link href="/reports/fines-summary">
-            Multas
-          </Link>
-        </li>
+</div>
 
-        <li>
-          <Link href="/reports/member-activity">
-            Actividad usuarios
-          </Link>
-        </li>
+</div>
 
-        <li>
-          <Link href="/reports/inventory-health">
-            Inventario
-          </Link>
-        </li>
-
-      </ul>
-
-    </div>
-  );
+)
 }
