@@ -1,72 +1,50 @@
-"use client";
+import { Pool } from "pg";
 
-import { useEffect, useState } from "react";
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+});
 
-type Book = {
+type BookRow = {
   title: string;
   author: string;
-  total_loans: number;
-  ranking: number;
+  borrow_count: number;
+  rank: number;
 };
 
-export default function Page() {
+export default async function MostBorrowedPage() {
 
-  const [data, setData] = useState<Book[]>([]);
-  const [search, setSearch] = useState("");
+  const result = await pool.query(`
+    SELECT title, author, borrow_count, rank
+    FROM vw_most_borrowed_books
+    ORDER BY rank
+    LIMIT 20
+  `);
 
-  async function loadData() {
-
-    const res = await fetch(`/api/reports/most-borrowed?search=${search}&page=1&limit=10`);
-
-    const json = await res.json();
-
-    setData(json);
-  }
-
-  useEffect(() => {
-    loadData();
-  }, []);
+  const data: BookRow[] = result.rows;
 
   return (
-
-    <div>
-
+    <div style={{ padding: 20 }}>
       <h1>Libros más prestados</h1>
 
-      <input
-        placeholder="Buscar título o autor"
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-      />
-
-      <button onClick={loadData}>
-        Buscar
-      </button>
-
-      <table border={1}>
-
+      <table border={1} cellPadding={10}>
         <thead>
           <tr>
+            <th>Ranking</th>
             <th>Título</th>
             <th>Autor</th>
-            <th>Total</th>
-            <th>Ranking</th>
+            <th>Préstamos</th>
           </tr>
         </thead>
 
         <tbody>
-
-          {data.map((b, i) => (
-
+          {data.map((row, i) => (
             <tr key={i}>
-              <td>{b.title}</td>
-              <td>{b.author}</td>
-              <td>{b.total_loans}</td>
-              <td>{b.ranking}</td>
+              <td>{row.rank}</td>
+              <td>{row.title}</td>
+              <td>{row.author}</td>
+              <td>{row.borrow_count}</td>
             </tr>
-
           ))}
-
         </tbody>
 
       </table>

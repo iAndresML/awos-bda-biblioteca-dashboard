@@ -1,40 +1,57 @@
-type Overdue = {
-  name: string;
+import { Pool } from "pg";
+
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+});
+
+type OverdueRow = {
+  member_name: string;
   title: string;
-  status: string;
+  due_at: string;
+  days_overdue: number;
+  suggested_fine: number;
 };
 
-async function getData(): Promise<Overdue[]> {
-  const r = await fetch("http://localhost:3000/api/overdue", { cache: "no-store" });
-  return r.json();
-}
+export default async function OverduePage() {
 
-export default async function Page() {
-  const data = await getData();
+  const result = await pool.query(`
+    SELECT member_name, title, due_at, days_overdue, suggested_fine
+    FROM vw_overdue_loans
+    ORDER BY days_overdue DESC
+    LIMIT 20
+  `);
+
+  const data: OverdueRow[] = result.rows;
 
   return (
-    <div>
+    <div style={{ padding: 20 }}>
       <h1>Préstamos vencidos</h1>
 
-      <table border={1} cellPadding={8}>
+      <table border={1} cellPadding={10}>
         <thead>
           <tr>
             <th>Usuario</th>
             <th>Libro</th>
-            <th>Status</th>
+            <th>Fecha límite</th>
+            <th>Días atraso</th>
+            <th>Multa sugerida</th>
           </tr>
         </thead>
 
         <tbody>
-          {data.map((r, i) => (
+          {data.map((row, i) => (
             <tr key={i}>
-              <td>{r.name}</td>
-              <td>{r.title}</td>
-              <td>{r.status}</td>
+              <td>{row.member_name}</td>
+              <td>{row.title}</td>
+              <td>{row.due_at}</td>
+              <td>{row.days_overdue}</td>
+              <td>${row.suggested_fine}</td>
             </tr>
           ))}
         </tbody>
+
       </table>
+
     </div>
   );
 }

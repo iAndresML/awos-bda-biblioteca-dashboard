@@ -1,40 +1,57 @@
-type Inventory = {
+import { Pool } from "pg";
+
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+});
+
+type InventoryRow = {
   title: string;
-  total: number;
-  available: number;
+  total_copies: number;
+  available_copies: number;
+  loaned_copies: number;
+  inventory_status: string;
 };
 
-async function getData(): Promise<Inventory[]> {
-  const r = await fetch("http://localhost:3000/api/inventory", { cache: "no-store" });
-  return r.json();
-}
+export default async function InventoryPage() {
 
-export default async function Page() {
-  const data = await getData();
+  const result = await pool.query(`
+    SELECT title, total_copies, available_copies, loaned_copies, inventory_status
+    FROM vw_inventory_health
+    ORDER BY total_copies DESC
+    LIMIT 20
+  `);
+
+  const data: InventoryRow[] = result.rows;
 
   return (
-    <div>
-      <h1>Inventario</h1>
+    <div style={{ padding: 20 }}>
+      <h1>Salud del inventario</h1>
 
-      <table border={1} cellPadding={8}>
+      <table border={1} cellPadding={10}>
         <thead>
           <tr>
-            <th>Título</th>
-            <th>Total</th>
+            <th>Libro</th>
+            <th>Total copias</th>
             <th>Disponibles</th>
+            <th>Prestadas</th>
+            <th>Estado</th>
           </tr>
         </thead>
 
         <tbody>
-          {data.map((r, i) => (
+          {data.map((row, i) => (
             <tr key={i}>
-              <td>{r.title}</td>
-              <td>{r.total}</td>
-              <td>{r.available}</td>
+              <td>{row.title}</td>
+              <td>{row.total_copies}</td>
+              <td>{row.available_copies}</td>
+              <td>{row.loaned_copies}</td>
+              <td>{row.inventory_status}</td>
             </tr>
           ))}
         </tbody>
+
       </table>
+
     </div>
   );
 }
