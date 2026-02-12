@@ -1,13 +1,30 @@
 import { Pool } from "pg";
 
+type InventoryRow = {
+  title: string;
+  total_copies: number;
+  available_copies: number;
+  loaned_copies: number;
+  inventory_status: string;
+};
+
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
+  host: "db",
+  port: 5432,
+  user: "appuser",
+  password: "apppass",
+  database: "biblioteca",
 });
 
 export default async function InventoryPage() {
 
-  const result = await pool.query(`
-    SELECT *
+  const result = await pool.query<InventoryRow>(`
+    SELECT
+      title,
+      total_copies,
+      available_copies,
+      loaned_copies,
+      inventory_status
     FROM vw_inventory_health
     ORDER BY total_copies DESC
     LIMIT 20
@@ -17,13 +34,13 @@ export default async function InventoryPage() {
 
   return (
     <div style={{ padding: 20 }}>
-      <h1>Salud del Inventario</h1>
+      <h1>Salud del inventario</h1>
 
       <table border={1} cellPadding={10}>
         <thead>
           <tr>
             <th>Libro</th>
-            <th>Total copias</th>
+            <th>Total</th>
             <th>Disponibles</th>
             <th>Prestadas</th>
             <th>Estado</th>
@@ -31,7 +48,7 @@ export default async function InventoryPage() {
         </thead>
 
         <tbody>
-          {data.map((row: any, i: number) => (
+          {data.map((row, i) => (
             <tr key={i}>
               <td>{row.title}</td>
               <td>{row.total_copies}</td>
@@ -41,8 +58,8 @@ export default async function InventoryPage() {
             </tr>
           ))}
         </tbody>
-      </table>
 
+      </table>
     </div>
   );
 }

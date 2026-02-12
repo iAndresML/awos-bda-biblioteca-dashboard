@@ -1,25 +1,32 @@
 import { Pool } from "pg";
 
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-});
-
 type MemberRow = {
   member_name: string;
   total_loans: number;
   activity_status: string;
 };
 
+const pool = new Pool({
+  host: "db",
+  port: 5432,
+  user: "appuser",
+  password: "apppass",
+  database: "biblioteca",
+});
+
 export default async function MembersPage() {
 
-  const result = await pool.query(`
-    SELECT member_name, total_loans, activity_status
+  const result = await pool.query<MemberRow>(`
+    SELECT
+      member_name,
+      total_loans,
+      activity_status
     FROM vw_member_activity
     ORDER BY total_loans DESC
     LIMIT 20
   `);
 
-  const data: MemberRow[] = result.rows;
+  const data = result.rows;
 
   return (
     <div style={{ padding: 20 }}>
@@ -45,7 +52,6 @@ export default async function MembersPage() {
         </tbody>
 
       </table>
-
     </div>
   );
 }

@@ -1,9 +1,5 @@
 import { Pool } from "pg";
 
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-});
-
 type FineRow = {
   member_name: string;
   total_fines: number;
@@ -11,16 +7,28 @@ type FineRow = {
   pending_fines: number;
 };
 
+const pool = new Pool({
+  host: "db",
+  port: 5432,
+  user: "appuser",
+  password: "apppass",
+  database: "biblioteca",
+});
+
 export default async function FinesPage() {
 
-  const result = await pool.query(`
-    SELECT member_name, total_fines, paid_fines, pending_fines
+  const result = await pool.query<FineRow>(`
+    SELECT
+      member_name,
+      total_fines,
+      paid_fines,
+      pending_fines
     FROM vw_fines_summary
     ORDER BY total_fines DESC
     LIMIT 20
   `);
 
-  const data: FineRow[] = result.rows;
+  const data = result.rows;
 
   return (
     <div style={{ padding: 20 }}>
@@ -30,7 +38,7 @@ export default async function FinesPage() {
         <thead>
           <tr>
             <th>Usuario</th>
-            <th>Total multas</th>
+            <th>Total</th>
             <th>Pagadas</th>
             <th>Pendientes</th>
           </tr>
@@ -48,7 +56,6 @@ export default async function FinesPage() {
         </tbody>
 
       </table>
-
     </div>
   );
 }

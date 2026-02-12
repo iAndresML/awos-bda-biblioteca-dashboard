@@ -9,10 +9,15 @@ type OverdueRow = {
 };
 
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
+  host: "db",
+  port: 5432,
+  user: "appuser",
+  password: "apppass",
+  database: "biblioteca",
 });
 
 export default async function OverduePage() {
+
   const result = await pool.query<OverdueRow>(`
     SELECT
       member_name,
@@ -22,19 +27,19 @@ export default async function OverduePage() {
       suggested_fine
     FROM vw_overdue_loans
     ORDER BY days_overdue DESC
-    LIMIT 50
+    LIMIT 20
   `);
 
   const data = result.rows;
 
   return (
-    <div style={{ padding: "20px" }}>
+    <div style={{ padding: 20 }}>
       <h1>Préstamos vencidos</h1>
 
-      <table border={1} cellPadding={8}>
+      <table border={1} cellPadding={10}>
         <thead>
           <tr>
-            <th>Miembro</th>
+            <th>Usuario</th>
             <th>Libro</th>
             <th>Fecha límite</th>
             <th>Días atraso</th>
@@ -43,8 +48,8 @@ export default async function OverduePage() {
         </thead>
 
         <tbody>
-          {data.map((row, index) => (
-            <tr key={index}>
+          {data.map((row, i) => (
+            <tr key={i}>
               <td>{row.member_name}</td>
               <td>{row.book_title}</td>
               <td>{row.due_at}</td>
@@ -53,8 +58,8 @@ export default async function OverduePage() {
             </tr>
           ))}
         </tbody>
-      </table>
 
+      </table>
     </div>
   );
 }

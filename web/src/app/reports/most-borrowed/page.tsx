@@ -1,9 +1,5 @@
 import { Pool } from "pg";
 
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-});
-
 type BookRow = {
   title: string;
   author: string;
@@ -11,16 +7,24 @@ type BookRow = {
   rank: number;
 };
 
+const pool = new Pool({
+  host: "db",
+  port: 5432,
+  user: "appuser",
+  password: "apppass",
+  database: "biblioteca",
+});
+
 export default async function MostBorrowedPage() {
 
-  const result = await pool.query(`
+  const result = await pool.query<BookRow>(`
     SELECT title, author, borrow_count, rank
     FROM vw_most_borrowed_books
     ORDER BY rank
     LIMIT 20
   `);
 
-  const data: BookRow[] = result.rows;
+  const data = result.rows;
 
   return (
     <div style={{ padding: 20 }}>
@@ -48,7 +52,6 @@ export default async function MostBorrowedPage() {
         </tbody>
 
       </table>
-
     </div>
   );
 }
