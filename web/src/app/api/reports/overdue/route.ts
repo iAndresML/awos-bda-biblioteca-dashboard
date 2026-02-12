@@ -5,25 +5,21 @@ export async function GET(req: Request) {
 
   const { searchParams } = new URL(req.url);
 
-  const search = searchParams.get("search") || "";
+  const min_days = parseInt(searchParams.get("min_days") || "0");
   const page = parseInt(searchParams.get("page") || "1");
   const limit = parseInt(searchParams.get("limit") || "10");
 
   const offset = (page - 1) * limit;
 
   const query = `
-    SELECT
-      title,
-      author,
-      total_loans,
-      ranking
-    FROM vw_most_borrowed_books
-    WHERE title ILIKE $1 OR author ILIKE $1
-    ORDER BY ranking
+    SELECT *
+    FROM vw_overdue_loans
+    WHERE dias_atraso >= $1
+    ORDER BY dias_atraso DESC
     LIMIT $2 OFFSET $3
   `;
 
-  const values = [`%${search}%`, limit, offset];
+  const values = [min_days, limit, offset];
 
   const result = await pool.query(query, values);
 
