@@ -1,4 +1,3 @@
-import { Pool } from "pg";
 export const dynamic = "force-dynamic";
 
 type InventoryRow = {
@@ -9,29 +8,13 @@ type InventoryRow = {
   inventory_status: string;
 };
 
-const pool = new Pool({
-  host: "db",
-  port: 5432,
-  user: "appuser",
-  password: "apppass",
-  database: "biblioteca",
-});
-
 export default async function InventoryPage() {
 
-  const result = await pool.query<InventoryRow>(`
-    SELECT
-      title,
-      total_copies,
-      available_copies,
-      loaned_copies,
-      inventory_status
-    FROM vw_inventory_health
-    ORDER BY total_copies DESC
-    LIMIT 20
-  `);
+  const res = await fetch("http://web:3000/api/reports/inventory", {
+    cache: "no-store",
+  });
 
-  const data = result.rows;
+  const data: InventoryRow[] = await res.json();
 
   return (
     <div style={{ padding: 20 }}>
@@ -61,6 +44,7 @@ export default async function InventoryPage() {
         </tbody>
 
       </table>
+
     </div>
   );
 }
