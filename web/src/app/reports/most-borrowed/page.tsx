@@ -1,24 +1,31 @@
-async function getData() {
+"use client";
 
-  const res = await fetch(
-    "http://localhost:3000/api/books",
-    {
-      cache: "no-store"
-    }
-  );
+import { useEffect, useState } from "react";
 
-  return res.json();
+type Book = {
+  title: string;
+  author: string;
+  total_loans: number;
+  ranking: number;
+};
 
-}
+export default function Page() {
 
-export default async function Page() {
+  const [data, setData] = useState<Book[]>([]);
+  const [search, setSearch] = useState("");
 
-  const data = await getData();
+  async function loadData() {
 
-  const total = data.reduce(
-    (sum: number, b: any) => sum + b.total_loans,
-    0
-  );
+    const res = await fetch(`/api/reports/most-borrowed?search=${search}&page=1&limit=10`);
+
+    const json = await res.json();
+
+    setData(json);
+  }
+
+  useEffect(() => {
+    loadData();
+  }, []);
 
   return (
 
@@ -26,38 +33,36 @@ export default async function Page() {
 
       <h1>Libros más prestados</h1>
 
-      <p>
-        Este reporte muestra los libros con mayor demanda.
-      </p>
+      <input
+        placeholder="Buscar título o autor"
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+      />
 
-      <h2>
-        KPI Total préstamos: {total}
-      </h2>
+      <button onClick={loadData}>
+        Buscar
+      </button>
 
       <table border={1}>
 
         <thead>
-
           <tr>
             <th>Título</th>
             <th>Autor</th>
             <th>Total</th>
             <th>Ranking</th>
           </tr>
-
         </thead>
 
         <tbody>
 
-          {data.map((b: any) => (
+          {data.map((b, i) => (
 
-            <tr key={b.id}>
-
+            <tr key={i}>
               <td>{b.title}</td>
               <td>{b.author}</td>
               <td>{b.total_loans}</td>
               <td>{b.ranking}</td>
-
             </tr>
 
           ))}
@@ -67,7 +72,5 @@ export default async function Page() {
       </table>
 
     </div>
-
   );
-
 }
