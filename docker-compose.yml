@@ -1,11 +1,31 @@
-db:
-  image: postgres:15
-  restart: always
-  environment:
-    POSTGRES_USER: postgres
-    POSTGRES_PASSWORD: postgres
-    POSTGRES_DB: biblioteca
-  volumes:
-    - ./db:/docker-entrypoint-initdb.d
-  ports:
-    - "5432:5432"
+version: "3.9"
+
+services:
+
+  db:
+    image: postgres:16
+    container_name: biblioteca_db
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: biblioteca
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./db/schema.sql:/docker-entrypoint-initdb.d/1_schema.sql
+      - ./db/seed.sql:/docker-entrypoint-initdb.d/2_seed.sql
+      - ./db/reports_vw.sql:/docker-entrypoint-initdb.d/3_reports.sql
+      - ./db/indexes.sql:/docker-entrypoint-initdb.d/4_indexes.sql
+      - ./db/roles.sql:/docker-entrypoint-initdb.d/5_roles.sql
+
+  web:
+    build: ./web
+    container_name: biblioteca_web
+    restart: always
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+    environment:
+      DATABASE_URL: postgresql://appuser:apppass@db:5432/biblioteca
