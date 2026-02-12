@@ -1,4 +1,5 @@
 import { Pool } from "pg";
+export const dynamic = "force-dynamic";
 
 type FineRow = {
   member_name: string;
