@@ -1,83 +1,47 @@
 import Link from "next/link";
 
-export default function Page() {
+export default function Home() {
 
   return (
 
     <div>
 
-      <h1>Dashboard de Biblioteca</h1>
+      <h1>Dashboard Biblioteca</h1>
 
-      <p>
-        Este dashboard permite analizar préstamos, multas,
-        actividad de usuarios e inventario.
-      </p>
+      <ul>
 
-      <div style={{
-        display: "grid",
-        gridTemplateColumns: "repeat(3, 1fr)",
-        gap: 20,
-        marginTop: 20
-      }}>
+        <li>
+          <Link href="/reports/most-borrowed">
+            Libros más prestados
+          </Link>
+        </li>
 
-        <Card
-          title="Libros más prestados"
-          link="/reports/most-borrowed"
-        />
+        <li>
+          <Link href="/reports/overdue">
+            Préstamos vencidos
+          </Link>
+        </li>
 
-        <Card
-          title="Préstamos vencidos"
-          link="/reports/overdue"
-        />
+        <li>
+          <Link href="/reports/fines-summary">
+            Multas
+          </Link>
+        </li>
 
-        <Card
-          title="Resumen de multas"
-          link="/reports/fines"
-        />
+        <li>
+          <Link href="/reports/member-activity">
+            Actividad usuarios
+          </Link>
+        </li>
 
-        <Card
-          title="Actividad de usuarios"
-          link="/reports/members"
-        />
+        <li>
+          <Link href="/reports/inventory-health">
+            Inventario
+          </Link>
+        </li>
 
-        <Card
-          title="Estado del inventario"
-          link="/reports/inventory"
-        />
-
-      </div>
+      </ul>
 
     </div>
-
   );
-
-}
-
-function Card({
-  title,
-  link
-}: {
-  title: string;
-  link: string;
-}) {
-
-  return (
-
-    <Link href={link}>
-
-      <div style={{
-        border: "1px solid gray",
-        padding: 20,
-        borderRadius: 10,
-        cursor: "pointer"
-      }}>
-
-        <h3>{title}</h3>
-
-      </div>
-
-    </Link>
-
-  );
-
 }
